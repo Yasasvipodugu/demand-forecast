@@ -83,7 +83,29 @@ export const ForecastPage: React.FC<ForecastPageProps> = ({
   };
 
   const handleExportCsv = () => {
-    window.location.href = apiClient.getExportForecastsUrl();
+    const headers = ['SKU ID', 'Product Name', 'Category', 'Subcategory', 'Brand Tier', 'Price', 'W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'Total 8W', 'Lower 8W', 'Upper 8W', 'Recommended Buy (Q*)', 'Safety Stock'];
+    const rows = forecasts.map(f => [
+      f.sku_id,
+      `"${f.product_name.replace(/"/g, '""')}"`,
+      f.category,
+      f.subcategory,
+      f.brand_tier,
+      f.retail_price,
+      ...f.weekly_forecast,
+      f.total_8w_demand,
+      f.total_lower_8w,
+      f.total_upper_8w,
+      f.recommended_buy_quantity,
+      f.safety_stock
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `launchwise_forecasts_8w_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

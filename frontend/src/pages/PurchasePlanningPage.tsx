@@ -75,15 +75,41 @@ export const PurchasePlanningPage: React.FC<PurchasePlanningPageProps> = ({ fore
         </div>
 
         <div className="flex items-center space-x-3">
-          <a
-            href={apiClient.getExportPurchaseOrdersUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => {
+              const headers = ['SKU ID', 'Product Name', 'Category', 'Brand Tier', 'Wholesale Cost ($)', 'Retail Price ($)', 'Expected 8W Demand', 'Recommended Buy (Q*)', 'Safety Buffer', 'PO Total Value ($)', 'Critical Fractile', 'Stockout Risk %'];
+              const rows = forecasts.map(f => {
+                const cost = f.cost_price || 25.0;
+                const poVal = (f.recommended_buy_quantity * cost).toFixed(2);
+                return [
+                  f.sku_id,
+                  `"${f.product_name.replace(/"/g, '""')}"`,
+                  f.category,
+                  f.brand_tier,
+                  cost,
+                  f.retail_price,
+                  f.total_8w_demand,
+                  f.recommended_buy_quantity,
+                  f.safety_stock,
+                  poVal,
+                  f.critical_fractile,
+                  f.stockout_risk_pct
+                ];
+              });
+              const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+              const encodedUri = encodeURI(csvContent);
+              const link = document.createElement('a');
+              link.setAttribute('href', encodedUri);
+              link.setAttribute('download', `launchwise_purchase_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
             className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-semibold shadow-sm shadow-indigo-600/20 flex items-center space-x-1.5 transition-all"
           >
             <Download className="w-4 h-4" />
             <span>Export Purchase Orders (PO) CSV</span>
-          </a>
+          </button>
         </div>
       </div>
 
