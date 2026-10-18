@@ -30,39 +30,33 @@ const sanitizeUser = (u: User | null): User | null => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(() => (
-    localStorage.getItem('launchwise_auth_token') || 
-    sessionStorage.getItem('launchwise_auth_token') || 
-    localStorage.getItem('demandwise_auth_token')
-  ));
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('launchwise_auth_token') || 
-                          sessionStorage.getItem('launchwise_auth_token') || 
-                          localStorage.getItem('demandwise_auth_token');
-      if (storedToken) {
+      // In a fresh browser session, sessionStorage is empty -> requires Login first
+      const sessionToken = sessionStorage.getItem('launchwise_auth_token');
+      if (sessionToken) {
         try {
-          const res = await apiClient.getMe(storedToken);
+          const res = await apiClient.getMe(sessionToken);
           if (res.user) {
             setUser(sanitizeUser(res.user));
-            setToken(storedToken);
+            setToken(sessionToken);
           } else {
-            localStorage.removeItem('launchwise_auth_token');
             sessionStorage.removeItem('launchwise_auth_token');
-            localStorage.removeItem('demandwise_auth_token');
             setUser(null);
             setToken(null);
           }
         } catch (err) {
-          console.warn('Session expired or invalid, clearing local credentials', err);
-          localStorage.removeItem('launchwise_auth_token');
+          console.warn('Session expired or invalid, clearing session credentials', err);
           sessionStorage.removeItem('launchwise_auth_token');
-          localStorage.removeItem('demandwise_auth_token');
           setUser(null);
           setToken(null);
         }
+      } else {
+        setUser(null);
+        setToken(null);
       }
       setIsLoading(false);
     };
@@ -74,13 +68,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await apiClient.login(email, password);
+      // Keep session in sessionStorage for active tab navigation
+      sessionStorage.setItem('launchwise_auth_token', res.token);
       if (rememberMe) {
-        localStorage.setItem('launchwise_auth_token', res.token);
         localStorage.setItem('launchwise_remember_email', email);
-        sessionStorage.removeItem('launchwise_auth_token');
       } else {
-        sessionStorage.setItem('launchwise_auth_token', res.token);
-        localStorage.removeItem('launchwise_auth_token');
         localStorage.removeItem('launchwise_remember_email');
       }
       setToken(res.token);
@@ -98,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await apiClient.register(params);
-      localStorage.setItem('launchwise_auth_token', res.token);
+      sessionStorage.setItem('launchwise_auth_token', res.token);
       setToken(res.token);
       setUser(sanitizeUser(res.user));
     } finally {
@@ -112,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('demandwise_auth_token');
     setUser(null);
     setToken(null);
+    window.location.hash = '';
   };
 
   return (

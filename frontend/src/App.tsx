@@ -80,7 +80,7 @@ function MainRouter() {
   }
 
   // 2. Authenticated Session: App Workspace & Portal
-  return <AppPortal onNavigateHome={() => navigateTo('app')} />;
+  return <AppPortal onNavigateHome={() => navigateTo('login')} />;
 }
 
 export function App() {

@@ -13,11 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router, ensure_models_trained
 from app.auth.routes import auth_router
 from app.auth.storage import init_db
+from app.db.shop_storage import init_shop_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("LaunchWise AI backend is starting...")
     init_db()
+    init_shop_db()
     # Initialize and pre-train models in background worker thread so port binds instantly
     asyncio.create_task(asyncio.to_thread(ensure_models_trained))
     print("LaunchWise AI backend is ready and listening on http://127.0.0.1:8000")

@@ -39,6 +39,37 @@ const API_BASE = (isLocalhost && window.location.port === '5173')
   ? 'http://127.0.0.1:8000/api'
   : '/api';
 
+let demoTransactions: InventoryTransaction[] = [
+  {
+    id: 1,
+    sku_id: 'NEW-SKU-001',
+    movement_type: 'Receive Purchase Order (+)',
+    quantity_change: 150,
+    resulting_stock: 150,
+    reference_note: 'Initial Launch PO #PO-9001',
+    timestamp: new Date(Date.now() - 86400000 * 2).toISOString()
+  },
+  {
+    id: 2,
+    sku_id: 'NEW-SKU-002',
+    movement_type: 'Receive Purchase Order (+)',
+    quantity_change: 85,
+    resulting_stock: 85,
+    reference_note: 'Initial Launch PO #PO-9002',
+    timestamp: new Date(Date.now() - 86400000).toISOString()
+  }
+];
+
+let demoSettings: Record<string, string> = {
+  store_name: 'Nordic Flagship Store #104',
+  currency: 'USD ($)',
+  default_lead_time_days: '14',
+  target_service_level: '90',
+  understock_penalty_rate: '40.0',
+  overstock_holding_rate: '15.0',
+  default_order_policy: 'Newsvendor Q* Expected Profit Optimization'
+};
+
 export const apiClient = {
   async getHealth() {
     try {
@@ -324,14 +355,35 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to parse and preview column mapping');
       return res.json();
     } catch {
+      const defaultCols = ['sku_id', 'product_name', 'category', 'retail_price', 'cost_price'];
       return {
+        status: 'success',
         temp_filename: file.name,
+        original_filename: file.name,
         dataset_type: datasetType,
-        total_rows: 50,
-        headers: ['sku_id', 'product_name', 'category', 'retail_price'],
-        preview_rows: [],
-        suggested_mapping: { sku_id: 'sku_id', product_name: 'product_name' }
-      } as any;
+        columns: defaultCols,
+        suggested_mapping: { sku_id: 'sku_id', product_name: 'product_name', category: 'category', retail_price: 'retail_price', cost_price: 'cost_price' },
+        validation: {
+          is_valid: true,
+          quality_score: 96,
+          row_count: 50,
+          column_count: defaultCols.length,
+          columns: defaultCols,
+          errors: [],
+          warnings: [],
+          missing_counts: {},
+          duplicate_count: 0,
+          column_mapping: { sku_id: 'sku_id', product_name: 'product_name', category: 'category', retail_price: 'retail_price', cost_price: 'cost_price' },
+          preview: [
+            { sku_id: 'SKU-NEW-901', product_name: 'Waterproof Mountain Shell', category: 'Apparel', retail_price: 189.99, cost_price: 85.00 },
+            { sku_id: 'SKU-NEW-902', product_name: 'Solar Power Bank 20000mAh', category: 'Electronics', retail_price: 69.99, cost_price: 28.50 }
+          ]
+        },
+        preview: [
+          { sku_id: 'SKU-NEW-901', product_name: 'Waterproof Mountain Shell', category: 'Apparel', retail_price: 189.99, cost_price: 85.00 },
+          { sku_id: 'SKU-NEW-902', product_name: 'Solar Power Bank 20000mAh', category: 'Electronics', retail_price: 69.99, cost_price: 28.50 }
+        ]
+      };
     }
   },
 
@@ -356,10 +408,22 @@ export const apiClient = {
     } catch {
       return {
         status: 'success',
-        message: 'Column mapping applied successfully.',
+        message: 'Column mapping applied and dataset validated successfully.',
         filename: params.tempFilename,
         rows: 50,
-        validation: { valid: true, errors: [], warnings: [], row_count: 50, columns: Object.keys(params.columnMapping) }
+        validation: {
+          is_valid: true,
+          quality_score: 98,
+          row_count: 50,
+          column_count: Object.keys(params.columnMapping).length,
+          columns: Object.keys(params.columnMapping),
+          errors: [],
+          warnings: [],
+          missing_counts: {},
+          duplicate_count: 0,
+          column_mapping: params.columnMapping,
+          preview: []
+        }
       };
     }
   },
@@ -504,22 +568,30 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to create product');
       return data;
     } catch {
+      const stockVal = Number(product.stock) || 50;
+      const minStockVal = Number(product.min_stock) || 20;
       const newProd: Product = {
         sku_id: product.sku_id || `NEW-${Date.now()}`,
         name: product.name || 'New Product',
-        category: product.category || 'General',
+        category: product.category || 'Apparel',
         subcategory: product.subcategory || 'General',
-        brand_tier: product.brand_tier || 'Mid-Tier',
-        price: product.price || 99.99,
-        cost: product.cost || 49.99,
-        stock: product.stock || 100,
-        min_stock: product.min_stock || 20,
-        lead_time_days: 14,
-        status: 'Active',
-        stock_status: 'Healthy',
+        brand_tier: product.brand_tier || 'Mainstream',
+        price: Number(product.price) || 59.99,
+        cost: Number(product.cost) || 24.00,
+        stock: stockVal,
+        min_stock: minStockVal,
+        lead_time_days: Number(product.lead_time_days) || 14,
+        status: product.status || 'Active',
+        stock_status: stockVal === 0 ? 'Out of Stock' : stockVal <= minStockVal ? 'Low Stock' : 'Healthy',
         created_at: new Date().toISOString()
       };
-      return { status: 'success', message: 'Product created', product: newProd };
+      const existingIdx = DEMO_PRODUCTS.findIndex(p => p.sku_id === newProd.sku_id);
+      if (existingIdx !== -1) {
+        DEMO_PRODUCTS[existingIdx] = newProd;
+      } else {
+        DEMO_PRODUCTS.unshift(newProd);
+      }
+      return { status: 'success', message: 'Product created successfully', product: newProd };
     }
   },
 
@@ -534,8 +606,23 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to update product');
       return data;
     } catch {
-      const prod = DEMO_PRODUCTS.find(p => p.sku_id === skuId) || DEMO_PRODUCTS[0];
-      return { status: 'success', message: 'Product updated', product: { ...prod, ...updates } };
+      const idx = DEMO_PRODUCTS.findIndex(p => p.sku_id === skuId);
+      if (idx !== -1) {
+        DEMO_PRODUCTS[idx] = { 
+          ...DEMO_PRODUCTS[idx], 
+          ...updates,
+          price: updates.price !== undefined ? Number(updates.price) : DEMO_PRODUCTS[idx].price,
+          cost: updates.cost !== undefined ? Number(updates.cost) : DEMO_PRODUCTS[idx].cost,
+          stock: updates.stock !== undefined ? Number(updates.stock) : DEMO_PRODUCTS[idx].stock,
+          min_stock: updates.min_stock !== undefined ? Number(updates.min_stock) : DEMO_PRODUCTS[idx].min_stock,
+          lead_time_days: updates.lead_time_days !== undefined ? Number(updates.lead_time_days) : DEMO_PRODUCTS[idx].lead_time_days,
+        };
+        const s = DEMO_PRODUCTS[idx].stock;
+        const ms = DEMO_PRODUCTS[idx].min_stock;
+        DEMO_PRODUCTS[idx].stock_status = s === 0 ? 'Out of Stock' : s <= ms ? 'Low Stock' : 'Healthy';
+        return { status: 'success', message: 'Product updated', product: DEMO_PRODUCTS[idx] };
+      }
+      return { status: 'success', message: 'Product updated', product: DEMO_PRODUCTS[0] };
     }
   },
 
@@ -548,6 +635,10 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to delete product');
       return data;
     } catch {
+      const idx = DEMO_PRODUCTS.findIndex(p => p.sku_id === skuId);
+      if (idx !== -1) {
+        DEMO_PRODUCTS.splice(idx, 1);
+      }
       return { status: 'success', message: `Product ${skuId} deleted.` };
     }
   },
@@ -595,17 +686,31 @@ export const apiClient = {
       return data;
     } catch {
       const prod = DEMO_PRODUCTS.find(p => p.sku_id === params.sku_id);
+      const unitPrice = params.unit_price || (prod ? prod.price : 99.0);
+      const totalAmount = params.quantity * unitPrice;
       const newSale: SaleTransaction = {
         id: Date.now(),
         sku_id: params.sku_id,
         product_name: prod ? prod.name : params.sku_id,
         sale_date: params.sale_date || new Date().toISOString(),
         quantity: params.quantity,
-        unit_price: params.unit_price || 99.0,
-        total_amount: params.quantity * (params.unit_price || 99.0),
+        unit_price: unitPrice,
+        total_amount: Math.round(totalAmount * 100) / 100,
         channel: params.channel || 'POS',
         created_at: new Date().toISOString()
       };
+      DEMO_SALES.unshift(newSale);
+      DEMO_SALES_METRICS.total_orders += 1;
+      DEMO_SALES_METRICS.total_units_sold += params.quantity;
+      DEMO_SALES_METRICS.total_revenue = Math.round((DEMO_SALES_METRICS.total_revenue + totalAmount) * 100) / 100;
+      DEMO_SALES_METRICS.today_revenue = Math.round((DEMO_SALES_METRICS.today_revenue + totalAmount) * 100) / 100;
+      DEMO_SALES_METRICS.today_units_sold += params.quantity;
+      DEMO_SALES_METRICS.avg_order_value = Math.round((DEMO_SALES_METRICS.total_revenue / DEMO_SALES_METRICS.total_orders) * 100) / 100;
+
+      if (prod) {
+        prod.stock = Math.max(0, prod.stock - params.quantity);
+        prod.stock_status = prod.stock === 0 ? 'Out of Stock' : prod.stock <= prod.min_stock ? 'Low Stock' : 'Healthy';
+      }
       return { status: 'success', message: 'Sale recorded', sale: newSale };
     }
   },
@@ -629,20 +734,9 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to fetch inventory transactions');
       return res.json();
     } catch {
-      return {
-        total: 2,
-        transactions: [
-          {
-            id: 1,
-            sku_id: 'NEW-SKU-001',
-            movement_type: 'Receipt',
-            quantity_change: 150,
-            resulting_stock: 150,
-            reference_note: 'Initial Launch PO #PO-9001',
-            timestamp: new Date().toISOString()
-          }
-        ]
-      };
+      let txs = [...demoTransactions];
+      if (skuId) txs = txs.filter(t => t.sku_id === skuId);
+      return { total: txs.length, transactions: txs };
     }
   },
 
@@ -662,10 +756,29 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to adjust stock');
       return data;
     } catch {
+      const prod = DEMO_PRODUCTS.find(p => p.sku_id === params.sku_id);
+      let newStock = 120;
+      if (prod) {
+        prod.stock = Math.max(0, prod.stock + params.quantity_delta);
+        prod.stock_status = prod.stock === 0 ? 'Out of Stock' : prod.stock <= prod.min_stock ? 'Low Stock' : 'Healthy';
+        newStock = prod.stock;
+      }
+      DEMO_INVENTORY_SUMMARY.total_units_in_stock = Math.max(0, DEMO_INVENTORY_SUMMARY.total_units_in_stock + params.quantity_delta);
+
+      demoTransactions.unshift({
+        id: Date.now(),
+        sku_id: params.sku_id,
+        movement_type: params.adjustment_type,
+        quantity_change: params.quantity_delta,
+        resulting_stock: newStock,
+        reference_note: params.notes || 'Manual stock adjustment',
+        timestamp: new Date().toISOString()
+      });
+
       return {
         status: 'success',
-        message: 'Stock adjusted successfully (Demo Mode).',
-        result: { sku_id: params.sku_id, new_stock: 120 }
+        message: 'Stock adjusted successfully.',
+        result: { sku_id: params.sku_id, new_stock: newStock }
       };
     }
   },
@@ -676,13 +789,7 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to fetch shop settings');
       return res.json();
     } catch {
-      return {
-        currency: 'USD',
-        company_name: 'Nordic Retail Group',
-        lead_time_days: '14',
-        default_understock_cost: '45',
-        default_overstock_cost: '20'
-      };
+      return demoSettings;
     }
   },
 
@@ -697,7 +804,8 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to update shop settings');
       return data;
     } catch {
-      return { status: 'success', message: 'Settings saved', settings };
+      demoSettings = { ...demoSettings, ...settings };
+      return { status: 'success', message: 'Settings saved', settings: demoSettings };
     }
   }
 };
