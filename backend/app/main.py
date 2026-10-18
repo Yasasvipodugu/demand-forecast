@@ -56,9 +56,12 @@ if frontend_dist.exists() and (frontend_dist / "index.html").exists():
     if (frontend_dist / "assets").exists():
         app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
 
+    @app.get("/")
+    async def serve_root():
+        return FileResponse(frontend_dist / "index.html")
+
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        # Don't intercept API routes or docs
         if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
             return None
         file_path = frontend_dist / full_path
