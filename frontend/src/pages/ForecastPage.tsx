@@ -110,6 +110,29 @@ export const ForecastPage: React.FC<ForecastPageProps> = ({
 
   return (
     <div className="p-8 space-y-6">
+      {/* Data Source & Distinction Protocol Banner */}
+      <div className="bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-semibold text-white flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-cyan-400" /> Data Protocol:
+          </span>
+          <span className="px-2.5 py-1 rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-800/60 font-mono text-[11px]">
+            1,200 Historical SKUs (Training Prior)
+          </span>
+          <span className="text-slate-500 font-bold">&rarr;</span>
+          <span className="px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-800/60 font-mono text-[11px] font-bold">
+            150 Cold-Start SKUs (8-Wk Predictions & Bounds)
+          </span>
+          <span className="text-slate-500 font-bold">&rarr;</span>
+          <span className="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-mono text-[11px]">
+            Hidden Actuals (Held-Out Evaluation Only)
+          </span>
+        </div>
+        <div className="text-[11px] text-cyan-400 font-mono font-medium">
+          Zero Sales Leakage
+        </div>
+      </div>
+
       {/* Control Bar: Model, Confidence, Run Action */}
       <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-4">

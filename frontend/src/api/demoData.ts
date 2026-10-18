@@ -20,269 +20,9 @@ export const DEMO_USER = {
   created_at: new Date().toISOString()
 };
 
-export const DEMO_FORECASTS: SKUForecast[] = [
-  {
-    sku_id: 'NEW-SKU-001',
-    product_name: 'Smart Home Hub Pro (NextGen)',
-    category: 'Electronics',
-    subcategory: 'Smart Home',
-    brand_tier: 'Premium',
-    retail_price: 189.99,
-    cost_price: 95.00,
-    launch_month: 'November',
-    marketing_level: 'Omnichannel Launch',
-    marketing_spend_flag: 1,
-    selected_model: 'ensemble',
-    confidence_level: 0.80,
-    weekly_forecast: [28, 38, 30, 24, 19, 17, 15, 13],
-    weekly_lower_bound: [20, 29, 22, 17, 13, 11, 10, 8],
-    weekly_upper_bound: [36, 47, 38, 31, 25, 23, 20, 18],
-    total_8w_demand: 184,
-    total_lower_8w: 130,
-    total_upper_8w: 242,
-    interval_width_8w: 112,
-    uncertainty_score: 0.38,
-    top_similarity_score: 0.91,
-    model_disagreement_std: 3.4,
-    recommended_buy_quantity: 215,
-    safety_stock: 31,
-    critical_fractile: 0.72,
-    stockout_risk_pct: 4.2,
-    excess_risk_pct: 12.8,
-    model_predictions: {
-      analogue: [26, 36, 29, 23, 18, 16, 14, 12],
-      hist_gradient_boosting: [30, 40, 31, 25, 20, 18, 16, 14],
-      random_forest: [28, 38, 30, 24, 19, 17, 15, 13],
-      baseline: [25, 34, 28, 22, 17, 15, 13, 11]
-    },
-    top_analogues: [
-      { 
-        sku_id: 'MAT-SKU-042', 
-        product_name: 'Smart Speaker v2', 
-        category: 'Electronics',
-        subcategory: 'Smart Home',
-        brand_tier: 'Premium',
-        retail_price: 179.99,
-        similarity_score: 91,
-        launch_curve: [25, 35, 28, 22, 18, 16, 14, 12],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.9, price: 0.92 }
-      },
-      { 
-        sku_id: 'MAT-SKU-108', 
-        product_name: 'Connected Bridge Hub', 
-        category: 'Electronics',
-        subcategory: 'Smart Home',
-        brand_tier: 'Premium',
-        retail_price: 199.99,
-        similarity_score: 87,
-        launch_curve: [24, 34, 27, 21, 17, 15, 13, 11],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.9, price: 0.88 }
-      }
-    ],
-    fallback_applied: false,
-    confidence_tier: 'High Confidence'
-  },
-  {
-    sku_id: 'NEW-SKU-002',
-    product_name: 'Cashmere Blend Minimalist Cardigan',
-    category: 'Apparel',
-    subcategory: 'Knitwear',
-    brand_tier: 'Luxury',
-    retail_price: 245.00,
-    cost_price: 110.00,
-    launch_month: 'October',
-    marketing_level: 'High Impact',
-    marketing_spend_flag: 1,
-    selected_model: 'ensemble',
-    confidence_level: 0.80,
-    weekly_forecast: [18, 32, 28, 22, 16, 14, 12, 10],
-    weekly_lower_bound: [12, 23, 19, 15, 10, 8, 7, 5],
-    weekly_upper_bound: [24, 41, 37, 29, 22, 20, 17, 15],
-    total_8w_demand: 152,
-    total_lower_8w: 99,
-    total_upper_8w: 205,
-    interval_width_8w: 106,
-    uncertainty_score: 0.42,
-    top_similarity_score: 0.88,
-    model_disagreement_std: 4.1,
-    recommended_buy_quantity: 178,
-    safety_stock: 26,
-    critical_fractile: 0.69,
-    stockout_risk_pct: 5.5,
-    excess_risk_pct: 14.1,
-    model_predictions: {
-      analogue: [17, 30, 26, 21, 15, 13, 11, 9],
-      hist_gradient_boosting: [19, 34, 30, 23, 17, 15, 13, 11],
-      random_forest: [18, 32, 28, 22, 16, 14, 12, 10],
-      baseline: [15, 28, 24, 19, 14, 12, 10, 8]
-    },
-    top_analogues: [
-      { 
-        sku_id: 'MAT-SKU-205', 
-        product_name: 'Merino Wool Cardigan', 
-        category: 'Apparel',
-        subcategory: 'Knitwear',
-        brand_tier: 'Luxury',
-        retail_price: 220.00,
-        similarity_score: 88,
-        launch_curve: [16, 29, 25, 20, 15, 13, 11, 9],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.9, price: 0.9 }
-      }
-    ],
-    fallback_applied: false,
-    confidence_tier: 'Normal (Calibrated)'
-  },
-  {
-    sku_id: 'NEW-SKU-003',
-    product_name: 'Nordic Ceramic Dining Set 16-pc',
-    category: 'Home & Kitchen',
-    subcategory: 'Tableware',
-    brand_tier: 'Premium',
-    retail_price: 139.50,
-    cost_price: 62.00,
-    launch_month: 'November',
-    marketing_level: 'Standard',
-    marketing_spend_flag: 0,
-    selected_model: 'ensemble',
-    confidence_level: 0.80,
-    weekly_forecast: [14, 21, 26, 23, 18, 15, 13, 11],
-    weekly_lower_bound: [9, 15, 19, 16, 12, 9, 8, 6],
-    weekly_upper_bound: [19, 27, 33, 30, 24, 21, 18, 16],
-    total_8w_demand: 141,
-    total_lower_8w: 94,
-    total_upper_8w: 188,
-    interval_width_8w: 94,
-    uncertainty_score: 0.35,
-    top_similarity_score: 0.89,
-    model_disagreement_std: 2.8,
-    recommended_buy_quantity: 162,
-    safety_stock: 21,
-    critical_fractile: 0.71,
-    stockout_risk_pct: 4.8,
-    excess_risk_pct: 11.5,
-    model_predictions: {
-      analogue: [13, 20, 25, 22, 17, 14, 12, 10],
-      hist_gradient_boosting: [15, 22, 27, 24, 19, 16, 14, 12],
-      random_forest: [14, 21, 26, 23, 18, 15, 13, 11],
-      baseline: [12, 18, 23, 20, 16, 13, 11, 9]
-    },
-    top_analogues: [
-      { 
-        sku_id: 'MAT-SKU-312', 
-        product_name: 'Stoneware Service 12pc', 
-        category: 'Home & Kitchen',
-        subcategory: 'Tableware',
-        brand_tier: 'Premium',
-        retail_price: 129.00,
-        similarity_score: 89,
-        launch_curve: [13, 20, 24, 21, 17, 14, 12, 10],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.9, price: 0.92 }
-      }
-    ],
-    fallback_applied: false,
-    confidence_tier: 'High Confidence'
-  },
-  {
-    sku_id: 'NEW-SKU-004',
-    product_name: 'Active Hydro Trail Pack 20L',
-    category: 'Outdoor & Sports',
-    subcategory: 'Hydration Packs',
-    brand_tier: 'Mid-Tier',
-    retail_price: 89.00,
-    cost_price: 38.00,
-    launch_month: 'December',
-    marketing_level: 'Standard',
-    marketing_spend_flag: 0,
-    selected_model: 'ensemble',
-    confidence_level: 0.80,
-    weekly_forecast: [12, 19, 22, 20, 16, 14, 11, 9],
-    weekly_lower_bound: [7, 13, 15, 13, 10, 8, 6, 4],
-    weekly_upper_bound: [17, 25, 29, 27, 22, 20, 16, 14],
-    total_8w_demand: 123,
-    total_lower_8w: 76,
-    total_upper_8w: 170,
-    interval_width_8w: 94,
-    uncertainty_score: 0.45,
-    top_similarity_score: 0.84,
-    model_disagreement_std: 3.9,
-    recommended_buy_quantity: 145,
-    safety_stock: 22,
-    critical_fractile: 0.68,
-    stockout_risk_pct: 5.9,
-    excess_risk_pct: 13.8,
-    model_predictions: {
-      analogue: [11, 18, 21, 19, 15, 13, 10, 8],
-      hist_gradient_boosting: [13, 20, 23, 21, 17, 15, 12, 10],
-      random_forest: [12, 19, 22, 20, 16, 14, 11, 9],
-      baseline: [10, 16, 19, 17, 14, 12, 9, 7]
-    },
-    top_analogues: [
-      { 
-        sku_id: 'MAT-SKU-488', 
-        product_name: 'Trail Running Vest', 
-        category: 'Outdoor & Sports',
-        subcategory: 'Hydration Packs',
-        brand_tier: 'Mid-Tier',
-        retail_price: 85.00,
-        similarity_score: 84,
-        launch_curve: [11, 17, 20, 18, 14, 12, 10, 8],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.8, price: 0.95 }
-      }
-    ],
-    fallback_applied: false,
-    confidence_tier: 'Normal (Calibrated)'
-  },
-  {
-    sku_id: 'NEW-SKU-005',
-    product_name: 'Noise-Cancelling Wireless Earbuds X3',
-    category: 'Electronics',
-    subcategory: 'Audio',
-    brand_tier: 'Premium',
-    retail_price: 159.00,
-    cost_price: 72.00,
-    launch_month: 'November',
-    marketing_level: 'Omnichannel Launch',
-    marketing_spend_flag: 1,
-    selected_model: 'ensemble',
-    confidence_level: 0.80,
-    weekly_forecast: [34, 45, 38, 30, 24, 21, 18, 16],
-    weekly_lower_bound: [25, 35, 29, 22, 17, 14, 12, 10],
-    weekly_upper_bound: [43, 55, 47, 38, 31, 28, 24, 22],
-    total_8w_demand: 226,
-    total_lower_8w: 164,
-    total_upper_8w: 288,
-    interval_width_8w: 124,
-    uncertainty_score: 0.32,
-    top_similarity_score: 0.93,
-    model_disagreement_std: 3.1,
-    recommended_buy_quantity: 260,
-    safety_stock: 34,
-    critical_fractile: 0.74,
-    stockout_risk_pct: 3.8,
-    excess_risk_pct: 10.9,
-    model_predictions: {
-      analogue: [32, 43, 36, 28, 23, 20, 17, 15],
-      hist_gradient_boosting: [36, 47, 40, 32, 25, 22, 19, 17],
-      random_forest: [34, 45, 38, 30, 24, 21, 18, 16],
-      baseline: [30, 40, 34, 27, 21, 19, 16, 14]
-    },
-    top_analogues: [
-      { 
-        sku_id: 'MAT-SKU-012', 
-        product_name: 'True Wireless Earbuds v2', 
-        category: 'Electronics',
-        subcategory: 'Audio',
-        brand_tier: 'Premium',
-        retail_price: 149.00,
-        similarity_score: 93,
-        launch_curve: [31, 42, 35, 28, 22, 19, 16, 14],
-        dimension_scores: { category: 1.0, subcategory: 1.0, brand: 0.95, price: 0.94 }
-      }
-    ],
-    fallback_applied: false,
-    confidence_tier: 'High Confidence'
-  }
-];
+import { FORECASTS_150 } from './forecasts_150';
+
+export const DEMO_FORECASTS: SKUForecast[] = FORECASTS_150 as unknown as SKUForecast[];
 
 export const DEMO_PRODUCTS: Product[] = DEMO_FORECASTS.map((f) => ({
   sku_id: f.sku_id,
@@ -436,51 +176,31 @@ export const DEMO_EVALUATION_RESULTS: EvaluationResults = {
   ]
 };
 
-export const DEMO_LEAST_CONFIDENT_SKUS: LeastConfidentSKU[] = [
-  {
-    sku_id: 'NEW-SKU-004',
-    product_name: 'Active Hydro Trail Pack 20L',
-    category: 'Outdoor & Sports',
-    subcategory: 'Hydration Packs',
-    brand_tier: 'Mid-Tier',
-    retail_price: 89.00,
-    point_forecast_8w: 123,
-    total_lower_8w: 76,
-    total_upper_8w: 170,
-    interval_width_8w: 94,
-    top_similarity_score: 0.84,
-    model_disagreement_std: 3.9,
-    composite_risk_score: 0.45,
-    risk_tier: 'High Risk',
+export const DEMO_LEAST_CONFIDENT_SKUS: LeastConfidentSKU[] = [...DEMO_FORECASTS]
+  .sort((a, b) => (b.uncertainty_score || 0) - (a.uncertainty_score || 0))
+  .slice(0, 10)
+  .map(f => ({
+    sku_id: f.sku_id,
+    product_name: f.product_name,
+    category: f.category,
+    subcategory: f.subcategory,
+    brand_tier: f.brand_tier,
+    retail_price: f.retail_price,
+    point_forecast_8w: Math.round(f.total_8w_demand),
+    total_lower_8w: Math.round(f.total_lower_8w),
+    total_upper_8w: Math.round(f.total_upper_8w),
+    interval_width_8w: Math.round(f.interval_width_8w),
+    top_similarity_score: Math.round(f.top_similarity_score || 80),
+    model_disagreement_std: Math.round((f.model_disagreement_std || 3.5) * 10) / 10,
+    composite_risk_score: Math.round((f.uncertainty_score || 45) * 10) / 10,
+    risk_tier: (f.uncertainty_score || 0) > 40 ? 'High Risk' : 'Moderate Risk',
     risk_drivers: [
-      'Limited historical analogues in Hydration Packs subcategory (< 4 matches)',
-      'High model disagreement between Analogue Prior and HistGBM Regressor (std 3.9)',
-      'Wide conformal prediction interval (MPIW 94 units relative to 123 mean)'
+      `High model disagreement across Gower analogue prior and HistGBM regressor (±${Math.round((f.model_disagreement_std || 3.5) * 10) / 10} u/wk)`,
+      `Wide conformal prediction interval (±${Math.round(f.interval_width_8w / 2)} units relative to ${Math.round(f.total_8w_demand)} mean)`,
+      `Novel cold-start product in ${f.category} (${f.subcategory}) with no historical brand sales history`
     ],
-    recommended_buyer_action: 'Place conservative initial PO of 110 units with scheduled 3-week replenishment review.'
-  },
-  {
-    sku_id: 'NEW-SKU-002',
-    product_name: 'Cashmere Blend Minimalist Cardigan',
-    category: 'Apparel',
-    subcategory: 'Knitwear',
-    brand_tier: 'Luxury',
-    retail_price: 245.00,
-    point_forecast_8w: 152,
-    total_lower_8w: 99,
-    total_upper_8w: 205,
-    interval_width_8w: 106,
-    top_similarity_score: 0.88,
-    model_disagreement_std: 4.1,
-    composite_risk_score: 0.42,
-    risk_tier: 'Moderate Risk',
-    risk_drivers: [
-      'High unit cost ($110 wholesale) creates asymmetric overstock penalty',
-      'Seasonality sensitivity for October luxury knitwear launch'
-    ],
-    recommended_buyer_action: 'Order 178 units with 20% allocated buffer to Metro flagships.'
-  }
-];
+    recommended_buyer_action: `Order initial conservative quantity of ${Math.round(f.total_lower_8w)} units (lower bound) with a scheduled replenishment review at Week 3.`
+  }));
 
 export const DEMO_HIDDEN_ACTUALS: HiddenActualsEvaluationResult = {
   status: 'success',
