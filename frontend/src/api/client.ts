@@ -1,6 +1,7 @@
 import type { 
   SKUForecast, 
   SKUExplanation, 
+  DemandDriver, 
   LeastConfidentSKU, 
   EvaluationResults, 
   InventoryRecommendation, 
@@ -69,6 +70,151 @@ let demoSettings: Record<string, string> = {
   overstock_holding_rate: '15.0',
   default_order_policy: 'Newsvendor Q* Expected Profit Optimization'
 };
+
+export function buildClientSkuExplanation(skuId: string): SKUExplanation {
+  const foundSku = DEMO_FORECASTS.find(f => f.sku_id === skuId) || DEMO_FORECASTS[0];
+  const brand = foundSku.brand_tier || 'Mainstream';
+  const mktg = foundSku.marketing_level || 'Standard';
+  const price = foundSku.retail_price || 49.99;
+  const subcat = foundSku.subcategory || 'General';
+  const topAnalogues = (foundSku.top_analogues && foundSku.top_analogues.length > 0)
+    ? foundSku.top_analogues
+    : [];
+  const topSim = topAnalogues[0]?.similarity_score || foundSku.top_similarity_score || 85.0;
+  const avgTop3 = topAnalogues.length > 0
+    ? Math.round((topAnalogues.slice(0, 3).reduce((acc, a) => acc + (a.similarity_score || 0), 0) / Math.min(3, topAnalogues.length)) * 10) / 10
+    : topSim;
+
+  // 1. Attribute Driver Decomposition (Impact vs Category Baseline)
+  const drivers: DemandDriver[] = [];
+  if (brand === 'Premium' || brand === 'Luxury') {
+    drivers.push({
+      factor: `Brand Tier (${brand})`,
+      direction: 'negative_volume_positive_margin',
+      impact_pct: brand === 'Premium' ? -22 : -45,
+      description: `Higher price positioning dampens unit volume by ~${brand === 'Premium' ? 22 : 45}%, compensated by premium gross margin.`
+    });
+  } else if (brand === 'Budget') {
+    drivers.push({
+      factor: 'Brand Tier (Budget)',
+      direction: 'positive_volume',
+      impact_pct: 35,
+      description: 'Mass-market value pricing drives ~35% higher baseline unit sales uptake.'
+    });
+  } else {
+    drivers.push({
+      factor: 'Brand Tier (Mainstream)',
+      direction: 'neutral_volume',
+      impact_pct: 0,
+      description: 'Balanced price-to-quality positioning matches broader retail market expectations.'
+    });
+  }
+
+  if (mktg === 'High Impact' || mktg === 'Omnichannel Launch') {
+    const lift = mktg === 'High Impact' ? 35 : 65;
+    drivers.push({
+      factor: `Marketing Campaign (${mktg})`,
+      direction: 'positive_volume',
+      impact_pct: lift,
+      description: `Dedicated launch campaign provides estimated +${lift}% early-week launch curve acceleration.`
+    });
+  } else if (mktg === 'None') {
+    drivers.push({
+      factor: 'Marketing Level (None)',
+      direction: 'negative_volume',
+      impact_pct: -15,
+      description: 'Lack of promotional launch push depresses week 1-2 discovery volume by ~15%.'
+    });
+  } else {
+    drivers.push({
+      factor: 'Marketing Campaign (Standard)',
+      direction: 'positive_volume',
+      impact_pct: 12,
+      description: 'Standard catalog placement and organic discovery provide steady adoption lift.'
+    });
+  }
+
+  if (price > 120) {
+    drivers.push({
+      factor: `Price Point ($${price.toFixed(2)})`,
+      direction: 'negative_volume',
+      impact_pct: -18,
+      description: 'Retail price above $120 incurs consumer price sensitivity and slower velocity.'
+    });
+  } else if (price < 35) {
+    drivers.push({
+      factor: `Accessible Price Point ($${price.toFixed(2)})`,
+      direction: 'positive_volume',
+      impact_pct: 20,
+      description: 'Impulse purchase price band boosts introductory conversion rates.'
+    });
+  } else {
+    drivers.push({
+      factor: `Competitive Price Point ($${price.toFixed(2)})`,
+      direction: 'neutral_volume',
+      impact_pct: 5,
+      description: 'Pricing is competitively indexed against subcategory benchmarks.'
+    });
+  }
+
+  // 2. Multi-Factor Uncertainty Reasons
+  const uncertaintyReasons: string[] = [];
+  if (topSim < 75) {
+    uncertaintyReasons.push(
+      `Moderate analogue similarity (${topSim.toFixed(1)}%). Launch curve stabilized against category baseline.`
+    );
+  } else {
+    uncertaintyReasons.push(
+      `Strong analogue match (${topSim.toFixed(1)}%) with historical bestseller '${topAnalogues[0]?.product_name || subcat}'.`
+    );
+  }
+
+  const analoguePred = foundSku.model_predictions?.analogue || [];
+  const gbPred = foundSku.model_predictions?.hist_gradient_boosting || foundSku.model_predictions?.attribute_ml || [];
+  const analogueTot = analoguePred.reduce((a, b) => a + b, 0);
+  const gbTot = gbPred.reduce((a, b) => a + b, 0);
+  const spread = Math.abs(analogueTot - gbTot);
+
+  if (spread > 40) {
+    uncertaintyReasons.push(
+      `Model divergence: Analogue curve suggests ${Math.round(analogueTot)} units vs Gradient Boosting ${Math.round(gbTot)} units (spread: ${Math.round(spread)} units).`
+    );
+  } else {
+    uncertaintyReasons.push(
+      `High model consensus: Multi-model ensemble agreement standard deviation is low (σ = ${(foundSku.model_disagreement_std || 12.5).toFixed(1)} units).`
+    );
+  }
+
+  if ((foundSku.uncertainty_score || 35) > 45) {
+    uncertaintyReasons.push(
+      'Prediction interval is wider due to volatility in early adoption weeks (weeks 1-3).'
+    );
+  } else {
+    uncertaintyReasons.push(
+      'Well-calibrated 80% conformal prediction bounds with narrow forecast error margin.'
+    );
+  }
+
+  const analogueName = topAnalogues[0]?.product_name || 'similar historical items';
+  const executiveSummary = `Forecast for ${foundSku.sku_id} (${foundSku.brand_tier} ${foundSku.subcategory}) is anchored primarily on historical performance of '${analogueName}' (match: ${topSim.toFixed(1)}%). Key demand drivers include ${foundSku.marketing_level} marketing support and ${foundSku.brand_tier} brand tier positioning. Composite uncertainty rating is ${Math.round(foundSku.uncertainty_score || 35)}/100. Buyers should monitor Week 1 sell-through closely to validate whether adoption follows the ${analogueTot > gbTot ? 'optimistic' : 'conservative'} trajectory.`;
+
+  return {
+    sku_id: foundSku.sku_id,
+    executive_summary: executiveSummary,
+    demand_drivers: drivers,
+    top_analogues: topAnalogues,
+    feature_importances: [
+      { feature: 'Subcategory Launch Velocity', importance: 0.32 },
+      { feature: 'Price Band & Margin Index', importance: 0.26 },
+      { feature: 'Historical Twin Similarity', importance: 0.22 },
+      { feature: 'Marketing Campaign Push', importance: 0.12 },
+      { feature: 'Launch Month Seasonality', importance: 0.08 }
+    ],
+    uncertainty_reasons: uncertaintyReasons,
+    analogue_fit_score: avgTop3,
+    model_predictions: foundSku.model_predictions || {}
+  };
+}
 
 export const apiClient = {
   async getHealth() {
@@ -214,21 +360,13 @@ export const apiClient = {
     try {
       const res = await fetch(`${API_BASE}/forecasts/${encodeURIComponent(skuId)}/explanations`);
       if (!res.ok) throw new Error(`Failed to fetch explanations for SKU ${skuId}`);
-      return res.json();
+      const data = await res.json();
+      if (data && Array.isArray(data.top_analogues) && data.executive_summary) {
+        return data;
+      }
+      throw new Error('Incomplete explanation data from backend');
     } catch {
-      return {
-        sku_id: skuId,
-        feature_importance: [
-          { feature: 'Price Band & Margin', importance: 0.34 },
-          { feature: 'Historical Category Launch Trajectory', importance: 0.28 },
-          { feature: 'Marketing Spend & Promotion', importance: 0.21 },
-          { feature: 'Launch Month Seasonality', importance: 0.17 }
-        ],
-        analogue_influence: [
-          { name: 'Smart Speaker v2', weight: 0.52 },
-          { name: 'Connected Bridge Hub', weight: 0.38 }
-        ]
-      } as any;
+      return buildClientSkuExplanation(skuId);
     }
   },
 
