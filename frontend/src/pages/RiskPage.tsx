@@ -56,7 +56,7 @@ export const RiskPage: React.FC<RiskPageProps> = ({
                 <StatusBadge type="risk" value={active.risk_tier} />
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Category: <strong>{active.category}</strong> • Retail Price: <strong>${active.retail_price.toFixed(2)}</strong> • Brand: <strong>{active.brand_tier}</strong>
+                Category: <strong>{active.category || 'General'}</strong> • Retail Price: <strong>${(active.retail_price ?? 0).toFixed(2)}</strong> • Brand: <strong>{active.brand_tier || 'Standard'}</strong>
               </p>
             </div>
 
@@ -64,7 +64,7 @@ export const RiskPage: React.FC<RiskPageProps> = ({
               <div className="text-right">
                 <span className="text-[11px] text-slate-500 block">Composite Uncertainty Score</span>
                 <span className="text-xl font-bold font-mono text-rose-600">
-                  {active.composite_risk_score.toFixed(1)} / 100
+                  {(active.composite_risk_score ?? 0).toFixed(1)} / 100
                 </span>
               </div>
               <button
@@ -84,7 +84,7 @@ export const RiskPage: React.FC<RiskPageProps> = ({
                 Root Cause Uncertainty Drivers:
               </h4>
               <div className="space-y-2">
-                {active.risk_drivers.map((driver, idx) => (
+                {(active.risk_drivers || []).map((driver, idx) => (
                   <div key={idx} className="p-3 bg-amber-50/60 border border-amber-200/80 rounded-lg text-xs text-amber-900 flex items-start gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-600 mt-1.5 shrink-0"></span>
                     <span>{driver}</span>
@@ -96,15 +96,15 @@ export const RiskPage: React.FC<RiskPageProps> = ({
               <div className="grid grid-cols-3 gap-2 pt-2 text-xs font-mono">
                 <div className="p-2 bg-slate-50 rounded border border-slate-200">
                   <span className="text-[10px] text-slate-500 block font-sans">Analogue Match</span>
-                  <span className="font-bold text-slate-800">{active.top_similarity_score}%</span>
+                  <span className="font-bold text-slate-800">{active.top_similarity_score ?? 0}%</span>
                 </div>
                 <div className="p-2 bg-slate-50 rounded border border-slate-200">
                   <span className="text-[10px] text-slate-500 block font-sans">Spread (Upper - Lower)</span>
-                  <span className="font-bold text-slate-800">±{Math.round(active.interval_width_8w / 2)} units</span>
+                  <span className="font-bold text-slate-800">±{Math.round((active.interval_width_8w ?? 0) / 2)} units</span>
                 </div>
                 <div className="p-2 bg-slate-50 rounded border border-slate-200">
                   <span className="text-[10px] text-slate-500 block font-sans">Model Disagreement</span>
-                  <span className="font-bold text-slate-800">±{active.model_disagreement_std} u/wk</span>
+                  <span className="font-bold text-slate-800">±{active.model_disagreement_std ?? 0} u/wk</span>
                 </div>
               </div>
             </div>
@@ -117,13 +117,13 @@ export const RiskPage: React.FC<RiskPageProps> = ({
                 </span>
                 <h4 className="text-sm font-bold text-white mb-2">Prescribed Inventory Tactic:</h4>
                 <p className="text-xs text-slate-200 leading-relaxed">
-                  {active.recommended_buyer_action}
+                  {active.recommended_buyer_action || 'Order initial quantity based on conservative demand lower bound.'}
                 </p>
               </div>
 
               <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                <span>Baseline Forecast: <strong className="text-white font-mono">{Math.round(active.point_forecast_8w)} units</strong></span>
-                <span>Interval: <strong className="text-white font-mono">[{Math.round(active.total_lower_8w)} — {Math.round(active.total_upper_8w)}]</strong></span>
+                <span>Baseline Forecast: <strong className="text-white font-mono">{Math.round(active.point_forecast_8w ?? 0)} units</strong></span>
+                <span>Interval: <strong className="text-white font-mono">[{Math.round(active.total_lower_8w ?? 0)} — {Math.round(active.total_upper_8w ?? 0)}]</strong></span>
               </div>
             </div>
           </div>
@@ -179,15 +179,15 @@ export const RiskPage: React.FC<RiskPageProps> = ({
                       <StatusBadge type="risk" value={sku.risk_tier} />
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className={`font-bold ${sku.top_similarity_score < 70 ? 'text-rose-600' : 'text-slate-700'}`}>
-                        {sku.top_similarity_score}%
+                      <span className={`font-bold ${(sku.top_similarity_score ?? 0) < 70 ? 'text-rose-600' : 'text-slate-700'}`}>
+                        {sku.top_similarity_score ?? 0}%
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-slate-600">
-                      [{Math.round(sku.total_lower_8w)} — {Math.round(sku.total_upper_8w)}]
+                      [{Math.round(sku.total_lower_8w ?? 0)} — {Math.round(sku.total_upper_8w ?? 0)}]
                     </td>
                     <td className="px-4 py-2.5 font-bold text-rose-600">
-                      {sku.composite_risk_score.toFixed(1)}
+                      {(sku.composite_risk_score ?? 0).toFixed(1)}
                     </td>
                     <td className="px-4 py-2.5 text-right font-sans">
                       <button

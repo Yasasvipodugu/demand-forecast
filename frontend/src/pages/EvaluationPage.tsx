@@ -84,14 +84,14 @@ export const EvaluationPage: React.FC<EvaluationPageProps> = ({
   }
 
   // Model comparison data for holdout
-  const modelTable = Object.entries(evaluation.model_comparison).map(([name, m]) => ({
+  const modelTable = Object.entries(evaluation?.model_comparison || {}).map(([name, m]) => ({
     name,
     wape: m.wape,
     mae: m.mae,
     rmse: m.rmse
   }));
 
-  const sampleCurve = evaluation.sample_curves?.[selectedSampleIdx];
+  const sampleCurve = evaluation?.sample_curves?.[selectedSampleIdx];
   const sampleChartData = sampleCurve
     ? [1, 2, 3, 4, 5, 6, 7, 8].map((w, idx) => ({
         week: `Week ${w}`,
@@ -114,7 +114,7 @@ export const EvaluationPage: React.FC<EvaluationPageProps> = ({
       }))
     : [];
 
-  const hiddenModelTable = hiddenActuals
+  const hiddenModelTable = hiddenActuals?.model_comparison
     ? Object.entries(hiddenActuals.model_comparison).map(([name, m]) => ({
         name,
         wape: m.wape,

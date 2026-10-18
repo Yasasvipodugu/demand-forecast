@@ -24,7 +24,10 @@ import {
   DEMO_SALES,
   DEMO_SALES_METRICS,
   DEMO_INVENTORY_SUMMARY,
-  DEMO_ALLOCATIONS
+  DEMO_ALLOCATIONS,
+  DEMO_EVALUATION_RESULTS,
+  DEMO_LEAST_CONFIDENT_SKUS,
+  DEMO_HIDDEN_ACTUALS
 } from './demoData';
 
 const isLocalhost = typeof window !== 'undefined' && (
@@ -247,21 +250,7 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to fetch evaluation results');
       return res.json();
     } catch {
-      return {
-        metrics: {
-          wape: 0.174,
-          mape: 0.186,
-          rmse: 14.2,
-          r2: 0.78,
-          coverage_80: 0.824
-        },
-        models_compared: [
-          { name: 'LaunchWise Ensemble', wape: 0.174, rmse: 14.2 },
-          { name: 'HistGradientBoosting', wape: 0.198, rmse: 16.5 },
-          { name: 'Analogue Matching', wape: 0.221, rmse: 18.9 },
-          { name: 'Category Baseline', wape: 0.312, rmse: 26.4 }
-        ]
-      } as any;
+      return DEMO_EVALUATION_RESULTS;
     }
   },
 
@@ -273,7 +262,7 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to run evaluation benchmark');
       return res.json();
     } catch {
-      return this.getEvaluationResults();
+      return DEMO_EVALUATION_RESULTS;
     }
   },
 
@@ -284,17 +273,8 @@ export const apiClient = {
       return res.json();
     } catch {
       return {
-        count: 2,
-        least_confident_skus: [
-          {
-            sku_id: 'NEW-SKU-004',
-            product_name: 'Active Hydro Trail Pack 20L',
-            uncertainty_score: 0.45,
-            interval_width: 94,
-            stockout_risk_pct: 5.9,
-            reasons: ['Limited historical analogues in Hydration Packs subcategory']
-          } as any
-        ]
+        count: DEMO_LEAST_CONFIDENT_SKUS.length,
+        least_confident_skus: DEMO_LEAST_CONFIDENT_SKUS.slice(0, topN)
       };
     }
   },
@@ -327,13 +307,7 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to run hidden actuals evaluation');
       return res.json();
     } catch {
-      return {
-        evaluated_skus: 150,
-        wape: 0.168,
-        rmse: 13.9,
-        coverage_rate: 0.835,
-        status: 'completed'
-      } as any;
+      return DEMO_HIDDEN_ACTUALS;
     }
   },
 
@@ -500,7 +474,7 @@ export const apiClient = {
       let prods = [...DEMO_PRODUCTS];
       if (params?.search) {
         const s = params.search.toLowerCase();
-        prods = prods.filter(p => p.product_name.toLowerCase().includes(s) || p.sku_id.toLowerCase().includes(s));
+        prods = prods.filter(p => p.name.toLowerCase().includes(s) || p.sku_id.toLowerCase().includes(s));
       }
       if (params?.category && params.category !== 'All') {
         prods = prods.filter(p => p.category === params.category);
@@ -531,17 +505,18 @@ export const apiClient = {
       return data;
     } catch {
       const newProd: Product = {
-        id: Date.now(),
         sku_id: product.sku_id || `NEW-${Date.now()}`,
-        product_name: product.product_name || 'New Product',
+        name: product.name || 'New Product',
         category: product.category || 'General',
+        subcategory: product.subcategory || 'General',
         brand_tier: product.brand_tier || 'Mid-Tier',
-        retail_price: product.retail_price || 99.99,
-        cost_price: product.cost_price || 49.99,
-        current_stock: product.current_stock || 100,
-        safety_stock: product.safety_stock || 20,
+        price: product.price || 99.99,
+        cost: product.cost || 49.99,
+        stock: product.stock || 100,
+        min_stock: product.min_stock || 20,
         lead_time_days: 14,
         status: 'Active',
+        stock_status: 'Healthy',
         created_at: new Date().toISOString()
       };
       return { status: 'success', message: 'Product created', product: newProd };
@@ -619,18 +594,17 @@ export const apiClient = {
       if (!res.ok) throw new Error(data.detail || 'Failed to record sale');
       return data;
     } catch {
+      const prod = DEMO_PRODUCTS.find(p => p.sku_id === params.sku_id);
       const newSale: SaleTransaction = {
         id: Date.now(),
-        transaction_id: `TXN-${Math.floor(1000 + Math.random() * 9000)}`,
         sku_id: params.sku_id,
-        product_name: DEMO_PRODUCTS.find(p => p.sku_id === params.sku_id)?.product_name || params.sku_id,
-        category: 'Retail',
+        product_name: prod ? prod.name : params.sku_id,
+        sale_date: params.sale_date || new Date().toISOString(),
         quantity: params.quantity,
         unit_price: params.unit_price || 99.0,
         total_amount: params.quantity * (params.unit_price || 99.0),
         channel: params.channel || 'POS',
-        store_cluster: 'Cluster A',
-        sale_date: params.sale_date || new Date().toISOString()
+        created_at: new Date().toISOString()
       };
       return { status: 'success', message: 'Sale recorded', sale: newSale };
     }
