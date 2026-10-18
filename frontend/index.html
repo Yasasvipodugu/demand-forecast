@@ -10,8 +10,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="margin: 0; background-color: #020617;">
+    <div id="root">
+      <div style="min-height: 100vh; background-color: #020617; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; text-align: center; padding: 20px;">
+        <div style="width: 44px; height: 44px; border: 4px solid rgba(99,102,241,0.2); border-top-color: #22d3ee; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
+        <h2 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.02em;">LaunchWise AI</h2>
+        <p style="font-size: 12px; margin: 0; color: #64748b;">Loading demand forecasting and inventory engine...</p>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
