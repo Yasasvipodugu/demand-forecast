@@ -34,12 +34,36 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(auth_router)
 
-@app.get("/")
-def root():
-    return {
-        "service": "LaunchWise AI Backend",
-        "tagline": "Predict demand. Plan purchases. Manage inventory smarter.",
-        "version": "1.0.0",
-        "docs_url": "/docs",
-        "health_check": "/api/health"
-    }
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Check for built frontend in frontend/dist or docs
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+frontend_dist = BASE_DIR / "frontend" / "dist"
+if not frontend_dist.exists() or not (frontend_dist / "index.html").exists():
+    frontend_dist = BASE_DIR / "docs"
+
+if frontend_dist.exists() and (frontend_dist / "index.html").exists():
+    if (frontend_dist / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Don't intercept API routes or docs
+        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
+            return None
+        file_path = frontend_dist / full_path
+        if full_path and file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(frontend_dist / "index.html")
+else:
+    @app.get("/")
+    def root():
+        return {
+            "service": "LaunchWise AI Backend",
+            "tagline": "Predict demand. Plan purchases. Manage inventory smarter.",
+            "version": "1.0.0",
+            "docs_url": "/docs",
+            "health_check": "/api/health"
+        }
