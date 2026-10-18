@@ -21,8 +21,17 @@ def test_demo_login():
         print("  -> PASSED: Demo login returned valid user and session token.")
         return data["token"]
 
-def test_me_endpoint(token):
+def test_me_endpoint():
     print("Testing GET /api/auth/me with Bearer token...")
+    # Obtain token first
+    req_login = urllib.request.Request(
+        f"{BASE_URL}/login",
+        data=json.dumps({"email": "buyer@retail.com", "password": "demo123"}).encode('utf-8'),
+        headers={"Content-Type": "application/json"}
+    )
+    with urllib.request.urlopen(req_login) as resp_login:
+        token = json.loads(resp_login.read().decode('utf-8'))["token"]
+
     req = urllib.request.Request(
         f"{BASE_URL}/me",
         headers={"Authorization": f"Bearer {token}"}

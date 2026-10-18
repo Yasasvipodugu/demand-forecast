@@ -9,7 +9,7 @@ def make_req(endpoint, method="GET", data=None):
     with urllib.request.urlopen(req, timeout=30) as res:
         return json.loads(res.read().decode())
 
-def run_tests():
+def test_live_api():
     print("Testing /api/health...")
     health = make_req("/health")
     assert health["status"] == "healthy"
