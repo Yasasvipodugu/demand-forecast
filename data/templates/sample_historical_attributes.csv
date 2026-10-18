@@ -1,0 +1,6 @@
+sku_id,product_name,category,subcategory,color,material,price_band,brand_tier,retail_price,cost_price,launch_date,launch_month,marketing_level,launch_week_idx
+HIST-SKU-0001,Premium Slate Navy Running Sneakers,Footwear,Running Sneakers,Slate Navy,Full-Grain Leather,$80 - $150,Premium,139.99,58.80,2023-04-10,April,High Impact,14
+HIST-SKU-0002,Mainstream Heather Gray Hoodies & Sweats,Apparel,Hoodies & Sweats,Heather Gray,Organic Cotton,$40 - $80,Mainstream,59.99,32.99,2023-09-18,September,Standard,37
+HIST-SKU-0003,Budget Sand Beige Desk Organizers,Home & Living,Desk Organizers,Sand Beige,Bamboo & Wood,Under $40,Budget,24.99,16.24,2024-01-15,January,None,54
+HIST-SKU-0004,Luxury Midnight Black Wireless Earbuds,Electronics,Wireless Earbuds,Midnight Black,Anodized Aluminum,Over $150,Luxury,199.99,59.99,2024-05-20,May,Omnichannel Launch,72
+HIST-SKU-0005,Mainstream Terracotta Botanical Cleansers,Beauty & Grooming,Botanical Cleansers,Terracotta,Glass Bottle,Under $40,Mainstream,34.99,19.24,2024-10-14,October,Standard,93

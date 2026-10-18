@@ -1,0 +1,37 @@
+date,event_name,year,month,demand_lift_factor
+2023-01-01,New Year Promotion,2023,1,1.25
+2023-02-14,Valentine Special,2023,2,1.3
+2023-03-20,Spring Refresh,2023,3,1.15
+2023-05-27,Memorial Day Sale,2023,5,1.45
+2023-07-04,Summer Clearance,2023,7,1.35
+2023-08-20,Back to School,2023,8,1.5
+2023-09-02,Labor Day Blitz,2023,9,1.4
+2023-10-15,Fall Fashion Drop,2023,10,1.25
+2023-11-24,Black Friday,2023,11,2.6
+2023-11-28,Cyber Week,2023,11,2.4
+2023-12-18,Super Saturday,2023,12,2.1
+2023-12-26,Holiday Peak / Boxing Day,2023,12,1.8
+2024-01-01,New Year Promotion,2024,1,1.25
+2024-02-14,Valentine Special,2024,2,1.3
+2024-03-20,Spring Refresh,2024,3,1.15
+2024-05-27,Memorial Day Sale,2024,5,1.45
+2024-07-04,Summer Clearance,2024,7,1.35
+2024-08-20,Back to School,2024,8,1.5
+2024-09-02,Labor Day Blitz,2024,9,1.4
+2024-10-15,Fall Fashion Drop,2024,10,1.25
+2024-11-24,Black Friday,2024,11,2.6
+2024-11-28,Cyber Week,2024,11,2.4
+2024-12-18,Super Saturday,2024,12,2.1
+2024-12-26,Holiday Peak / Boxing Day,2024,12,1.8
+2025-01-01,New Year Promotion,2025,1,1.25
+2025-02-14,Valentine Special,2025,2,1.3
+2025-03-20,Spring Refresh,2025,3,1.15
+2025-05-27,Memorial Day Sale,2025,5,1.45
+2025-07-04,Summer Clearance,2025,7,1.35
+2025-08-20,Back to School,2025,8,1.5
+2025-09-02,Labor Day Blitz,2025,9,1.4
+2025-10-15,Fall Fashion Drop,2025,10,1.25
+2025-11-24,Black Friday,2025,11,2.6
+2025-11-28,Cyber Week,2025,11,2.4
+2025-12-18,Super Saturday,2025,12,2.1
+2025-12-26,Holiday Peak / Boxing Day,2025,12,1.8

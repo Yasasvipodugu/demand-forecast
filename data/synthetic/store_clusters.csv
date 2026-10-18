@@ -1,0 +1,6 @@
+cluster_id,cluster_name,store_count,base_capacity_weight,category_affinity_json
+cluster_1,Flagship Urban Metro,25,0.32,"{""Apparel"": 0.3, ""Footwear"": 0.35, ""Electronics"": 0.35, ""Home & Living"": 0.28, ""Beauty & Grooming"": 0.32}"
+cluster_2,Suburban Power Center,55,0.28,"{""Apparel"": 0.28, ""Footwear"": 0.26, ""Electronics"": 0.27, ""Home & Living"": 0.32, ""Beauty & Grooming"": 0.28}"
+cluster_3,High-Street Boutique,40,0.18,"{""Apparel"": 0.2, ""Footwear"": 0.18, ""Electronics"": 0.12, ""Home & Living"": 0.15, ""Beauty & Grooming"": 0.24}"
+cluster_4,Regional Standard Mall,60,0.14,"{""Apparel"": 0.14, ""Footwear"": 0.13, ""Electronics"": 0.16, ""Home & Living"": 0.17, ""Beauty & Grooming"": 0.1}"
+cluster_5,E-Commerce Digital Hub,1,0.08,"{""Apparel"": 0.08, ""Footwear"": 0.08, ""Electronics"": 0.1, ""Home & Living"": 0.08, ""Beauty & Grooming"": 0.06}"

@@ -1,0 +1,5 @@
+model_architecture,wape_pct,mae_units,rmse_units,evaluation_type,sample_size
+Category Baseline,41.79,44.65,62.92,blind_cold_start_hidden_actuals,150
+Analogue Model (Gower),31.61,33.77,47.46,blind_cold_start_hidden_actuals,150
+Attribute ML (HistGBM),26.02,27.8,37.49,blind_cold_start_hidden_actuals,150
+Ensemble Model (Final),26.62,28.44,38.78,blind_cold_start_hidden_actuals,150

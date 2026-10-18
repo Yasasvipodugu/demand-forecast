@@ -1,0 +1,25 @@
+{
+  "dataset_name": "LaunchWise AI Retail Benchmark Dataset (Synthetic)",
+  "is_synthetic": true,
+  "disclosure": "Synthetically generated benchmark designed specifically for cold-start new product demand forecasting evaluation without sales data leakage. Never claim synthetic results are official benchmark results or that they represent performance on real hidden actuals.",
+  "created_at": "2026-10-17T23:44:56.311693",
+  "n_historical_skus": 1200,
+  "n_new_skus": 150,
+  "launch_horizon_weeks": 8,
+  "categories": [
+    "Apparel",
+    "Footwear",
+    "Electronics",
+    "Home & Living",
+    "Beauty & Grooming"
+  ],
+  "files": [
+    "historical_attributes.csv",
+    "new_sku_attributes.csv",
+    "historical_launch_curves.csv",
+    "store_clusters.csv",
+    "holiday_calendar.csv",
+    "hidden_actual_sales.csv",
+    "three_year_weekly_sales.csv"
+  ]
+}
